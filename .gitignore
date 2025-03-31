@@ -1,4 +1,8 @@
-# Created by .ignore support plugin (hsz.mobi)
+### sqlite test db
+*.sqlite3
+*.sqlite3-journal
+*.db
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
