@@ -19,7 +19,7 @@ router = APIRouter(
 
 @router.get("/users")
 async def get_user(db: db_dependency):
-    users = db.scalars(select(Users)).all()
+    users = db.scalars(select(Users)).all()  # type: ignore[attr-defined]
     return users
 
 

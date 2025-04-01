@@ -16,7 +16,7 @@ router = APIRouter(
 
 @router.get("/")
 async def read_all(db: db_dependency):
-    return db.scalars(select(models.Todo)).all()
+    return db.scalars(select(models.Todo)).all()  # type: ignore[attr-defined]
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
