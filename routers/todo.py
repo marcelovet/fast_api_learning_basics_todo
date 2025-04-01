@@ -6,7 +6,7 @@ from starlette import status
 
 from request_models import TodoRequest
 from sqlite import models
-from sqlite.service import db_dependency
+from sqlite.service import db_dependency, user_dependency
 
 router = APIRouter(
     prefix="/todo",
@@ -30,8 +30,12 @@ async def read_todo(db: db_dependency, id: Annotated[int, Path(gt=0)]):
 
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_todo(db: db_dependency, request: TodoRequest):
-    todo = models.Todo(**request.model_dump())
+async def create_todo(user: user_dependency, db: db_dependency, request: TodoRequest):
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
+        )
+    todo = models.Todo(**request.model_dump(), owner_id=user.get("id"))
     db.add(todo)
     db.commit()
 
