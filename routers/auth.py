@@ -1,54 +1,29 @@
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt
 from sqlalchemy import select
 from starlette import status
 
-from request_models import CreateUserRequest
+from request_models import CreateUserRequest, Token
 from sqlite.models import Users
-from sqlite.security import pwd_context
+from sqlite.security import authenticate_user, create_access_token, pwd_context
 from sqlite.service import db_dependency
 
-SECRET_KEY = "a31b6458f79bfb8e08acad715e888376b61313f8b085a6b2c5e916b118f7f64b"
-ALGORITHM = "HS256"
-
-router = APIRouter()
-
-
-def authenticate_user(username: str, password: str, db):
-    user = db.scalar(select(Users).where(Users.username == username))
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    if not pwd_context.verify(password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user
+router = APIRouter(
+    prefix="/auth",
+    tags=["auth"],
+)
 
 
-def create_access_token(username: str, user_id: int, expires_delta: timedelta):
-    encode = {"sub": username, "id": user_id}
-    expire = datetime.now(timezone.utc) + expires_delta
-    encode.update({"exp": expire})
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
-
-
-@router.get("/users/")
+@router.get("/users")
 async def get_user(db: db_dependency):
     users = db.scalars(select(Users)).all()
     return users
 
 
-@router.post("/signup/", status_code=status.HTTP_201_CREATED)
+@router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency, request: CreateUserRequest):
     create_user_model = Users(
         email=request.email,
@@ -63,10 +38,10 @@ async def create_user(db: db_dependency, request: CreateUserRequest):
     db.commit()
 
 
-@router.post("/token")
+@router.post("/token", response_model=Token)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency
 ):
     user = authenticate_user(form_data.username, form_data.password, db)
     token = create_access_token(user.username, user.id, timedelta(minutes=20))
-    return token
+    return {"access_token": token, "token_type": "bearer"}

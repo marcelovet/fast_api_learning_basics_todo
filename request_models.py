@@ -39,6 +39,11 @@ class CreateUserRequest(BaseModel):
         return v
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class TodoRequest(BaseModel):
     title: str = Field(min_length=3)
     description: str = Field(min_length=3, max_length=100)

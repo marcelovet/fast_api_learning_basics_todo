@@ -8,7 +8,10 @@ from request_models import TodoRequest
 from sqlite import models
 from sqlite.service import db_dependency
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/todo",
+    tags=["todo"],
+)
 
 
 @router.get("/")
@@ -16,7 +19,7 @@ async def read_all(db: db_dependency):
     return db.scalars(select(models.Todo)).all()
 
 
-@router.get("/todo/{id}", status_code=status.HTTP_200_OK)
+@router.get("/{id}", status_code=status.HTTP_200_OK)
 async def read_todo(db: db_dependency, id: Annotated[int, Path(gt=0)]):
     todo = db.scalar(select(models.Todo).where(models.Todo.id == id))
     if not todo:
@@ -26,14 +29,14 @@ async def read_todo(db: db_dependency, id: Annotated[int, Path(gt=0)]):
     return todo
 
 
-@router.post("/todo/create", status_code=status.HTTP_201_CREATED)
+@router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create_todo(db: db_dependency, request: TodoRequest):
     todo = models.Todo(**request.model_dump())
     db.add(todo)
     db.commit()
 
 
-@router.put("/todo/update/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/update/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_todo(
     db: db_dependency, id: Annotated[int, Path(gt=0)], request: TodoRequest
 ):
@@ -49,7 +52,7 @@ async def update_todo(
     db.commit()
 
 
-@router.delete("/todo/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_todo(db: db_dependency, id: Annotated[int, Path(gt=0)]):
     todo = db.scalar(select(models.Todo).where(models.Todo.id == id))
     if not todo:
