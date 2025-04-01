@@ -1,26 +1,14 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Path
+from fastapi import APIRouter, HTTPException, Path
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 from starlette import status
 
 from request_models import TodoRequest
 from sqlite import models
-from sqlite.database import SqliteSession
-from fastapi import APIRouter
+from sqlite.service import db_dependency
 
 router = APIRouter()
-
-def get_db():
-    db = SqliteSession()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-db_dependency = Annotated[Session, Depends(get_db)]
 
 
 @router.get("/")
