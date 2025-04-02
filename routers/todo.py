@@ -4,9 +4,9 @@ from fastapi import APIRouter, HTTPException, Path
 from sqlalchemy import select
 from starlette import status
 
-from request_models import TodoRequest
-from sqlite import models
-from sqlite.service import db_dependency, user_dependency
+from models import database_models
+from models.request_models import TodoRequest
+from service.service import db_dependency, user_dependency
 
 router = APIRouter(
     prefix="/todo",
@@ -21,7 +21,9 @@ async def read_all(user: user_dependency, db: db_dependency):
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
         )
     return db.scalars(  # type: ignore[attr-defined]
-        select(models.Todo).where(models.Todo.owner_id == user.get("id"))
+        select(database_models.Todo).where(
+            database_models.Todo.owner_id == user.get("id")
+        )
     ).all()
 
 
@@ -34,9 +36,9 @@ async def read_todo(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
         )
     todo = db.scalar(
-        select(models.Todo).where(
-            models.Todo.id == id,
-            models.Todo.owner_id == user.get("id"),  # type: ignore[union-attr]
+        select(database_models.Todo).where(
+            database_models.Todo.id == id,
+            database_models.Todo.owner_id == user.get("id"),  # type: ignore[union-attr]
         )
     )
     if not todo:
@@ -52,7 +54,7 @@ async def create_todo(user: user_dependency, db: db_dependency, request: TodoReq
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
         )
-    todo = models.Todo(**request.model_dump(), owner_id=user.get("id"))
+    todo = database_models.Todo(**request.model_dump(), owner_id=user.get("id"))
     db.add(todo)
     db.commit()
 
@@ -69,9 +71,9 @@ async def update_todo(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
         )
     todo = db.scalar(
-        select(models.Todo).where(
-            models.Todo.id == id,
-            models.Todo.owner_id == user.get("id"),  # type: ignore[union-attr]
+        select(database_models.Todo).where(
+            database_models.Todo.id == id,
+            database_models.Todo.owner_id == user.get("id"),  # type: ignore[union-attr]
         )
     )
     if not todo:
@@ -94,9 +96,9 @@ async def delete_todo(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
         )
     todo = db.scalar(
-        select(models.Todo).where(
-            models.Todo.id == id,
-            models.Todo.owner_id == user.get("id"),  # type: ignore[union-attr]
+        select(database_models.Todo).where(
+            database_models.Todo.id == id,
+            database_models.Todo.owner_id == user.get("id"),  # type: ignore[union-attr]
         )
     )
     if not todo:

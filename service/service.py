@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from sqlite.database import SqliteSession
-from sqlite.security import get_current_user
+from auth.security import get_current_user
+from database.config import SqliteSession
 
 
 def get_db():

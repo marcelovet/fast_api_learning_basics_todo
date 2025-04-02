@@ -4,8 +4,8 @@ from fastapi import APIRouter, HTTPException, Path
 from sqlalchemy import select
 from starlette import status
 
-from sqlite import models
-from sqlite.service import db_dependency, user_dependency
+from models import database_models
+from service.service import db_dependency, user_dependency
 
 router = APIRouter(
     prefix="/admin",
@@ -20,7 +20,7 @@ async def read_all(user: user_dependency, db: db_dependency):
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
         )
     return db.scalars(  # type: ignore[attr-defined]
-        select(models.Todo)
+        select(database_models.Todo)
     ).all()
 
 
@@ -32,7 +32,7 @@ async def delete_todo(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
         )
-    todo = db.scalar(select(models.Todo).where(models.Todo.id == id))
+    todo = db.scalar(select(database_models.Todo).where(database_models.Todo.id == id))
     if not todo:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"

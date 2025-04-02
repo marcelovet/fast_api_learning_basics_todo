@@ -1,7 +1,7 @@
 from faker import Faker
 
-from sqlite.database import SqliteSession
-from sqlite.models import Todo
+from database.config import SqliteSession
+from models.database_models import Todo
 
 faker = Faker()
 

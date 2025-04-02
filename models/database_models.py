@@ -1,6 +1,7 @@
-from sqlalchemy import TEXT, Boolean, Column, Integer, String, ForeignKey
+from sqlalchemy import TEXT, Boolean, Column, ForeignKey, Integer, String
 
-from sqlite.database import Base
+from database.config import Base
+
 
 class Users(Base):
     __tablename__ = "users"
@@ -13,6 +14,7 @@ class Users(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     role = Column(String)
+
 
 class Todo(Base):
     __tablename__ = "todo"

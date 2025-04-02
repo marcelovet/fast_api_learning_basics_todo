@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
 from starlette import status
 
-from request_models import ChangePasswordRequest
-from sqlite import models
-from sqlite.security import authenticate_user, pwd_context
-from sqlite.service import db_dependency, user_dependency
+from auth.security import authenticate_user, pwd_context
+from models import database_models
+from models.request_models import ChangePasswordRequest
+from service.service import db_dependency, user_dependency
 
 router = APIRouter(
     prefix="/user",
@@ -19,7 +19,9 @@ async def get_user(user: user_dependency, db: db_dependency):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
         )
-    return db.scalar(select(models.Users).where(models.Users.id == user.get("id")))
+    return db.scalar(
+        select(database_models.Users).where(database_models.Users.id == user.get("id"))
+    )
 
 
 @router.put("/change_password", status_code=status.HTTP_204_NO_CONTENT)

@@ -6,10 +6,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from starlette import status
 
-from request_models import CreateUserRequest, Token
-from sqlite.models import Users
-from sqlite.security import authenticate_user, create_access_token, pwd_context
-from sqlite.service import db_dependency
+from auth.security import authenticate_user, create_access_token, pwd_context
+from models.database_models import Users
+from models.request_models import CreateUserRequest, Token
+from service.service import db_dependency
 
 router = APIRouter(
     prefix="/auth",

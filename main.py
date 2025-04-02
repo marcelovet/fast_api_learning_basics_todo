@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 
+from database.config import engine
+from models import database_models
 from routers import admin, auth, todo, users
-from sqlite import models
-from sqlite.database import engine
 
 app = FastAPI()
 
-models.Base.metadata.create_all(bind=engine)
+database_models.Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
 app.include_router(todo.router)

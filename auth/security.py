@@ -9,12 +9,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette import status
 
-from sqlite.models import Users
+from models.database_models import Users
 
 pwd_context = CryptContext(
     schemes=["argon2"],
     deprecated="auto",
-    argon2__rounds=500,
+    argon2__rounds=100,
 )
 
 
