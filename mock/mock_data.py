@@ -1,13 +1,13 @@
 from faker import Faker
 
-from database.config import SqliteSession
+from database.config import DbSession
 from models.database_models import Todo
 
 faker = Faker()
 
 
 def create_fake_data():
-    with SqliteSession() as session:
+    with DbSession() as session:
         for _ in range(10):
             todo = Todo(
                 title=faker.sentence(nb_words=10),

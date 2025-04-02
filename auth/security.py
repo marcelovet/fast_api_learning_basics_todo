@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from models.database_models import Users
+from setup import settings as st
 
 pwd_context = CryptContext(
     schemes=["argon2"],
@@ -18,9 +19,9 @@ pwd_context = CryptContext(
 )
 
 
-SECRET_KEY = "a31b6458f79bfb8e08acad715e888376b61313f8b085a6b2c5e916b118f7f64b"
-ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+secret_key: str = st.SECRET_KEY  # type: ignore[assignment]
+algorithm: str = st.ALGORITHM  # type: ignore[assignment]
 
 
 def authenticate_user(username: str, password: str, db: Session):
@@ -46,12 +47,12 @@ def create_access_token(
     encode = {"sub": username, "id": user_id, "role": role}
     expire = datetime.now(timezone.utc) + expires_delta
     encode.update({"exp": expire})
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(encode, secret_key, algorithm=algorithm)
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, secret_key, algorithms=[algorithm])
         username: str | None = payload.get("sub")
         user_id: int | None = payload.get("id")
         user_role: str | None = payload.get("role")

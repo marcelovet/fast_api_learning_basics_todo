@@ -9,7 +9,7 @@ from starlette import status
 from auth.security import authenticate_user, create_access_token, pwd_context
 from models.database_models import Users
 from models.request_models import CreateUserRequest, Token
-from service.service import db_dependency
+from service.dependencies import db_dependency
 
 router = APIRouter(
     prefix="/auth",

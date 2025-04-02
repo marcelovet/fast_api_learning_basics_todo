@@ -5,7 +5,7 @@ from sqlalchemy import select
 from starlette import status
 
 from models import database_models
-from service.service import db_dependency, user_dependency
+from service.dependencies import db_dependency, user_dependency
 
 router = APIRouter(
     prefix="/admin",

@@ -39,10 +39,12 @@ if APP_TYPE == "dev":
     CONFIG_PATH = CONFIG_PATH / ".local"
     postgres_config = load_config(CONFIG_PATH / "local.ini", "postgresql")
     mail_config = load_config(CONFIG_PATH / "local.ini", "mail")
+    jwt_config = load_config(CONFIG_PATH / "local.ini", "jwt")
 if APP_TYPE == "production":
     CONFIG_PATH = CONFIG_PATH / ".production"
     postgres_config = load_config(CONFIG_PATH / "production.ini", "postgresql")
     mail_config = load_config(CONFIG_PATH / "production.ini", "mail")
+    jwt_config = load_config(CONFIG_PATH / "production.ini", "jwt")
 
 # postgres database
 POSTGRES_HOST = postgres_config["host"]
@@ -69,5 +71,8 @@ EMAIL_SSL_KEYFILE = mail_config.get("ssl_keyfile", None)
 EMAIL_SSL_CERTFILE = mail_config.get("ssl_certfile", None)
 MAIL_ADMIN = mail_config["admin"]
 
+# jwt
+SECRET_KEY = str(jwt_config["secret"])
+ALGORITHM = str(jwt_config["algorithm"])
 
 sys.path.append(str(Path(__file__).parent.parent / "config"))

@@ -6,7 +6,7 @@ from starlette import status
 
 from models import database_models
 from models.request_models import TodoRequest
-from service.service import db_dependency, user_dependency
+from service.dependencies import db_dependency, user_dependency
 
 router = APIRouter(
     prefix="/todo",

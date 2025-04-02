@@ -5,7 +5,7 @@ from starlette import status
 from auth.security import authenticate_user, pwd_context
 from models import database_models
 from models.request_models import ChangePasswordRequest
-from service.service import db_dependency, user_dependency
+from service.dependencies import db_dependency, user_dependency
 
 router = APIRouter(
     prefix="/user",

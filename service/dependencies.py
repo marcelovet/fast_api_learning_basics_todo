@@ -4,11 +4,11 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from auth.security import get_current_user
-from database.config import SqliteSession
+from database.config import DbSession
 
 
 def get_db():
-    db = SqliteSession()
+    db = DbSession()
     try:
         yield db
     finally:
