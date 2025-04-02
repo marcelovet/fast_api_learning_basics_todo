@@ -69,6 +69,13 @@ class ChangePasswordRequest(BaseModel):
         return v
 
 
+class ChangePhone(BaseModel):
+    phone_number: Annotated[
+        str,
+        StringConstraints(min_length=8, max_length=20),
+    ]
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
