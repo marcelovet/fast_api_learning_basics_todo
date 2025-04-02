@@ -3,6 +3,14 @@ from sqlalchemy import TEXT, Boolean, Column, ForeignKey, Integer, String
 from database.config import Base
 
 
+class Roles(Base):
+    __tablename__ = "roles"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    role_name = Column(String(256), unique=True, nullable=False)
+    description = Column(TEXT)
+
+
 class Users(Base):
     __tablename__ = "users"
 
@@ -13,7 +21,8 @@ class Users(Base):
     last_name = Column(String)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
-    role = Column(String)
+    role = Column(String(256), ForeignKey("roles.role_name", ondelete="SET NULL"))
+    phone_number = Column(String(20))
 
 
 class Todo(Base):

@@ -20,7 +20,10 @@ class CreateUserRequest(BaseModel):
         str,
         StringConstraints(min_length=8, max_length=64),
     ]
-    role: str
+    phone_number: Annotated[
+        str,
+        StringConstraints(min_length=8, max_length=20),
+    ]
 
     @field_validator("password")
     def validate_password(cls, v):
