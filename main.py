@@ -8,6 +8,12 @@ app = FastAPI()
 
 database_models.Base.metadata.create_all(bind=engine)
 
+
+@app.get("/healthy")
+async def healthy():
+    return {"status": "healthy"}
+
+
 app.include_router(auth.router)
 app.include_router(todo.router)
 app.include_router(admin.router)
