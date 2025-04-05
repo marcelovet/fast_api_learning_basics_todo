@@ -16,6 +16,16 @@ router = APIRouter(
 )
 
 
+@router.get("/users")
+async def get_users(user: user_dependency, db: db_dependency):
+    if user is None or user.get("user_role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication failed",
+        )
+    return db.scalars(select(database_models.Users)).all()  # type: ignore[attr-defined]
+
+
 @router.get("/todo")
 async def read_all(user: user_dependency, db: db_dependency):
     if user is None or user.get("user_role") != "admin":
@@ -28,18 +38,20 @@ async def read_all(user: user_dependency, db: db_dependency):
     ).all()
 
 
-@router.delete("/todo/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/todo/delete/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_todo(
     user: user_dependency,
     db: db_dependency,
-    id: Annotated[int, Path(gt=0)],
+    todo_id: Annotated[int, Path(gt=0)],
 ):
     if user is None or user.get("user_role") != "admin":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication failed",
         )
-    todo = db.scalar(select(database_models.Todo).where(database_models.Todo.id == id))
+    todo = db.scalar(
+        select(database_models.Todo).where(database_models.Todo.id == todo_id),
+    )
     if not todo:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

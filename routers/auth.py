@@ -1,26 +1,23 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy import select
 from starlette import status
 
-from auth.security import authenticate_user, create_access_token, pwd_context
+from auth.security import authenticate_user
+from auth.security import create_access_token
+from auth.security import pwd_context
 from models.database_models import Users
-from models.request_models import CreateUserRequest, Token
+from models.request_models import CreateUserRequest
+from models.request_models import Token
 from service.dependencies import db_dependency
 
 router = APIRouter(
     prefix="/auth",
     tags=["auth"],
 )
-
-
-@router.get("/users")
-async def get_user(db: db_dependency):
-    users = db.scalars(select(Users)).all()  # type: ignore[attr-defined]
-    return users
 
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
@@ -41,10 +38,14 @@ async def create_user(db: db_dependency, request: CreateUserRequest):
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: db_dependency,
 ):
     user = authenticate_user(form_data.username, form_data.password, db)
     token = create_access_token(
-        user.username, user.id, user.role, timedelta(minutes=20)
+        user.username,
+        user.id,
+        user.role,
+        timedelta(minutes=20),
     )
     return {"access_token": token, "token_type": "bearer"}
