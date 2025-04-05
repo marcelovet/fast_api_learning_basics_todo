@@ -1,9 +1,13 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC
+from datetime import datetime
+from datetime import timedelta
 from typing import Annotated
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
+from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from jose import JWTError
+from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -15,7 +19,7 @@ from setup import settings as st
 pwd_context = CryptContext(
     schemes=["argon2"],
     deprecated="auto",
-    argon2__rounds=100,
+    argon2__rounds=10,
 )
 
 
@@ -42,10 +46,13 @@ def authenticate_user(username: str, password: str, db: Session):
 
 
 def create_access_token(
-    username: str, user_id: int, role: str, expires_delta: timedelta
+    username: str,
+    user_id: int,
+    role: str,
+    expires_delta: timedelta,
 ):
     encode = {"sub": username, "id": user_id, "role": role}
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(UTC) + expires_delta
     encode.update({"exp": expire})
     return jwt.encode(encode, secret_key, algorithm=algorithm)
 
@@ -62,10 +69,10 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
                 detail="Invalid authentication credentials",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        return {"username": username, "id": user_id, "user_role": user_role}
     except JWTError:
-        raise HTTPException(
+        raise HTTPException(  # noqa: B904
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    return {"username": username, "id": user_id, "user_role": user_role}

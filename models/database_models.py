@@ -1,4 +1,9 @@
-from sqlalchemy import TEXT, Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import TEXT
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
 
 from database.config import Base
 

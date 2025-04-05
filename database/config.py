@@ -1,7 +1,7 @@
 import urllib.parse
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from setup import settings as st
@@ -14,7 +14,8 @@ CONN_STRING += f"{st.POSTGRES_DB}"  # type: ignore[attr]
 
 SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URI,
+    connect_args={"check_same_thread": False},
 )
 
 # engine = create_engine(CONN_STRING)

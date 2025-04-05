@@ -5,7 +5,8 @@ from sqlalchemy import select
 
 from auth.security import pwd_context
 from database.config import DbSession
-from models.database_models import Todo, Users
+from models.database_models import Todo
+from models.database_models import Users
 
 faker = Faker()
 
